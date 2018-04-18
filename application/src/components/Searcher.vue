@@ -2,19 +2,20 @@
 	<div id="searcher">
 		<input type="text" placeholder="YouTube search" @keyup.13="search">
 		<button id="search-submit" @click="search">Search</button>
+		<button id="cancel" @click="undo" v-if="videoIsNotActive">Cancel Search</button>
 	</div>
 </template>
 
 <script>
 export default {
 	name: "searcher",
-	props: ["search"]
+	props: ["search", "undo", "videoIsNotActive"]
 }
 </script>
 
 <style lang="scss" scoped>
 	input {
-		width: 85%;
+		width: 80%;
 		height: 25px;
 		font-size: 14pt;
 		margin: 2% 1%;
@@ -22,5 +23,7 @@ export default {
 	#search-submit {
 		height: 25px;
 		font-size: 14pt;
+	}
+	#cancel {
 	}
 </style>
