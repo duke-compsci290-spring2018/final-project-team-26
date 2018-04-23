@@ -2,9 +2,10 @@
 	<div class="entry" @click="activate(video)">
 		<hr>
 		<div class="inner">
+			<h3 class="video-title">{{video.snippet.title}}</h3>
+			<span class="creator">By {{video.snippet.channelTitle}}</span>
 			<img :src="thumbnail.url" :width="thumbnail.width" :height="thumbnail.height">
-			<h3 class="video-title">{{limitTitle(video.snippet.title)}}</h3>
-			<span class="creator">{{video.snippet.channelTitle}}</span>
+			
 		</div>
 		<hr>
 	</div>
@@ -12,7 +13,7 @@
 
 <script>
 	export default {
-		name: "result-entry",
+		name: "analyzer-result-entry",
 		props: ["video", "thumbnail", "activate"],
 		methods: {
 			limitTitle (name) {
@@ -37,30 +38,28 @@
 		padding: 5px;
 	}
 	h3 {
-		width: 50%;
-		float: right;
-		position:relative;
-		bottom: 25px;
-		text-align: right;
-		font-size: 18pt;
-		margin: 20px 20px 0 0;
+		width: 90%;
 	}
 	.creator {
 		display:block;
-/*
-		position: absolute;
-		right: 5px;
-		bottom: 5px;
-*/
 	}
-
+	@media (max-width: 480px) {
+		img {
+			width: 95%;
+			height: auto;
+			margin-left: 2.5%;
+		}
+		h3 {
+			text-align: center;
+		}
+	}
 	@media (min-width: 768px) {
 		.entry {
 			width: 90%;
 			margin-left: 5%;
 		}
 		h3 {
-			font-size: 20pt;
+			font-size: 18pt;
 		}
 	}
 </style>

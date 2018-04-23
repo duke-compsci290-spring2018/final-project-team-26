@@ -51,6 +51,11 @@ export default {
 		search () {
 			console.log("entered search");
 			var mySearch = $("#searcher input").val();
+			this.activeVideo = {
+				id: {
+					videoId: ""
+				}
+			};
 			console.log(mySearch);
 			var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=25&key="+ YOUTUBE_KEY + "&q=";//first part of url to request to (need to format search before putting it in as value for q)
 			url += this.formatSearch(mySearch);//complete the url to send the GET request to
