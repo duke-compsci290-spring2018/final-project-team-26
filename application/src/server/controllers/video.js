@@ -1,5 +1,5 @@
 import {db, searchRef} from '../models/database.js';
-import IBM_CREDENTIALS from './ibmcredentials'
+import IBM_CREDENTIALS from './ibmcreds.js'
 export default {
 	reportSearched (req, res) {
 		searchRef.once('value', (snapshot) => {
@@ -34,6 +34,8 @@ export default {
 	requestAnalysis (req, res) {
 		var type = req.body.type;
 		var comments = req.body.comments;
+		console.log(type);
+		console.log(comments);
 		var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');//starting code from IBM Watson Documentation
 		var natural_language_understanding = new NaturalLanguageUnderstandingV1({
   			'username': IBM_CREDENTIALS.username,

@@ -2,7 +2,7 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-  entry: './src/main.js',
+  entry: './src/client/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
@@ -82,6 +82,13 @@ module.exports = {
   },
   performance: {
     hints: false
+  },
+	node: {
+    // see http://webpack.github.io/docs/configuration.html#node
+    // and https://webpack.js.org/configuration/node/
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
   },
   devtool: '#eval-source-map'
 }

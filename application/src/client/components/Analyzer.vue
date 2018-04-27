@@ -13,7 +13,7 @@
 import AnalyzerResultEntry from "./AnalyzerResultEntry.vue";
 import AnalysisSelector from "./AnalysisSelector.vue";
 import {YOUTUBE_KEY, CLIENT_ID} from "../keys.js";
-import {IBM_CREDENTIALS} from "../ibmcreds.js";
+import {SERVER_URL} from "../heroku_url.js"
 export default {
 	name: 'analyzer',
 	data () {
@@ -41,55 +41,18 @@ export default {
 //			this.getCORSData('https://watson-api-explorer.mybluemix.net/natural-language-understanding/api/v1/');
 			console.log(type);
 			console.log(this.myComments);
-			var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');//starting code from IBM Watson Documentation
-			var natural_language_understanding = new NaturalLanguageUnderstandingV1({
-  				'username': IBM_CREDENTIALS.username,
-				'password': IBM_CREDENTIALS.password,
-				'version': IBM_CREDENTIALS.version
-			});//starting code from IBM Watson Documentation
-			var choice;
-			var additions = {};
-			switch(type) {
-				case "Sentiment analysis":
-					choice = "sentiment";
-					break;
-				case "Emotion analysis":
-					choice = "emotion";
-					break;
-				case "Content analysis":
-					choice = "concepts";
-					additions = {
-						'limit': 3
-					};
-					break;
-				case "Entities analysis":
-					choice = "entities";
-					additions = {
-						'emotion': true,
-						'sentiment': true,
-						'limit': 10
-					};
-					break;
-			}
-			console.log("choice is " + choice);
-			console.log(additions);
-			this.myComments.forEach((comment) => {
-				var params = {
-					'text': comment.snippet.topLevelComment.snippet.textOriginal,
-					'features': {
-						[choice]: additions
-					}
-				};//modified code from IBM Watson Documentation
-				
-				natural_language_understanding.analyze(params, (err, response) => {
-					if(err) {
-						console.log("Error: " + err);
-					}
-					else {
-						console.log(response);
-					}
-				});//starting code from IBM Watson Documentation
-			});
+			console.log(SERVER_URL);
+			fetch(`${SERVER_URL}/books`, {
+				"method": 'GET',
+				"body": {
+					"type": type,
+					"comments": this.myComments
+				},
+				"headers": {
+					"content-type": 'application/json'
+				}
+			}).then(response => console.log(response))
+				.catch(err => console.log(err));
 //			var test = "This is a test. What can you do, Watson? I'm very excited to find out, but also somewhat skeptical. Do your best!";
 //			var testEncoded = encodeURIComponent(test);
 //			var requestURLStart = "https://watson-api-explorer.mybluemix.net/natural-language-understanding/api/v1/analyze?version=2018-03-16&text=";
