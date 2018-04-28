@@ -42,6 +42,12 @@ app.post('/searched', Video.addVideo)
 // delete given book
 app.delete('/searched/:key', Video.removeVideo)
 // nothing useful for root URL to do
+app.options('/analyze', (req, res) => {
+	res.send({
+		"Allow": [OPTIONS, GET]
+	})
+	res.end()
+})
 app.get('/', (req, res) => {
     res.json({"message": 'Welcome to the YouTube Comment Analyzer!'})
     res.end()
