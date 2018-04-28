@@ -70,12 +70,17 @@ export default {
 				break;
 		}
 		var results = [];
+		var text = "";
 		comments.forEach((comment) => {
+			text = text + comment.snippet.topLevelComment.snippet.textOriginal + ". ";
+		});
+		
 			var params = {
-				'text': comment.snippet.topLevelComment.snippet.textOriginal,
+				'text': text,
 				'features': {
 					[choice]: additions
-				}
+				},
+				'language': 'en'
 			};//modified code from IBM Watson Documentation
 				
 			natural_language_understanding.analyze(params, (err, response) => {
