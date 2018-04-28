@@ -1,5 +1,5 @@
 import {db, searchRef} from '../models/database.js';
-import IBM_CREDENTIALS from './ibmcreds.js'
+import IBM_CREDENTIALS from 'ibmcreds.js'
 export default {
 	reportSearched (req, res) {
 		searchRef.once('value', (snapshot) => {

@@ -1,1 +1,1 @@
-export const SERVER_URL = "https://git.heroku.com/fast-sea-43340.git";
+export const SERVER_URL = "https://fast-sea-43340.herokuapp.com";

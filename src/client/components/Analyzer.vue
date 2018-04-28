@@ -42,7 +42,7 @@ export default {
 			console.log(type);
 			console.log(this.myComments);
 			console.log(SERVER_URL);
-			fetch(`${SERVER_URL}/books`, {
+			fetch(`${SERVER_URL}/analyze`, {
 				"method": 'GET',
 				"body": {
 					"type": type,
