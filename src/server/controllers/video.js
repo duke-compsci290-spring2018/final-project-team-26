@@ -32,6 +32,9 @@ export default {
 	},
 	
 	requestAnalysis (req, res) {
+		console.log(req);
+		console.log(req.body);
+		console.log(req.params);
 		var type = req.body.type;
 		var comments = req.body.comments;
 		console.log(type);
