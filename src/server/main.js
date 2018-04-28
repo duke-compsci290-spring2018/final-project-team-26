@@ -34,7 +34,7 @@ import Video from "./controllers/video.js";
 
 // list of URLs (and their protocols) that this server responds to
 // sends analysis requests to Watson API, returns results to client
-app.get('/analyze', Video.requestAnalysis)
+app.post('/analyze', Video.requestAnalysis)
 //returns record of searched video's in database
 app.get('/searched', Video.reportSearched)
 // adds a new video to the database's record of searches
@@ -44,7 +44,7 @@ app.delete('/searched/:key', Video.removeVideo)
 // nothing useful for root URL to do
 app.options('/analyze', (req, res) => {
 	res.send({
-		"Allow": [OPTIONS, GET]
+		"Allow": [OPTIONS, POST]
 	})
 	res.end()
 })

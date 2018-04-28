@@ -43,7 +43,7 @@ export default {
 			console.log(this.myComments);
 			console.log(SERVER_URL);
 			fetch(`${SERVER_URL}/analyze`, {
-				method: 'GET',
+				method: 'POST',
 				body: JSON.stringify({
 					"type": type,
 					"comments": this.myComments
