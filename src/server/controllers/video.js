@@ -69,7 +69,7 @@ export default {
 				};
 				break;
 		}
-		var results = [];
+		var results = {};
 		var text = "";
 		comments.forEach((comment) => {
 			text = text + comment.snippet.topLevelComment.snippet.textOriginal + ". ";
@@ -88,7 +88,7 @@ export default {
 					console.log("Error: " + err);
 				}
 				else {
-					results.push(response);
+					results = response;
 				}
 			});//starting code from IBM Watson Documentation
 		res.send(JSON.stringify(results));
