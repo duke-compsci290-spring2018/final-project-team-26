@@ -21,7 +21,7 @@ app.use(Cors())
 // parse form data more easily
 app.use(BodyParser.urlencoded({limit: '5mb', extended: true }))
 // parse JSON form data
-app.use(BodyParser.json(limit: '5mb'))
+app.use(BodyParser.json({limit: '5mb'}))
 
 //code from https://enable-cors.org/server_expressjs.html
 app.use(function(req, res, next) {
