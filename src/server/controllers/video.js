@@ -91,6 +91,7 @@ export default {
 					results = response;
 				}
 			});//starting code from IBM Watson Documentation
+		console.log(results);
 		res.send(JSON.stringify(results));
 		res.end();
 		console.log("The results are back from Watson");
