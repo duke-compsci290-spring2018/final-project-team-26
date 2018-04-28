@@ -22,7 +22,12 @@ app.use(Cors())
 app.use(BodyParser.urlencoded({ extended: true }))
 // parse JSON form data
 app.use(BodyParser.json())
-
+//code from https://enable-cors.org/server_expressjs.html
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 // our local code that will respond to URL requests
 import Video from "./controllers/video.js";
