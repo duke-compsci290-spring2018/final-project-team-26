@@ -69,7 +69,6 @@ export default {
 				};
 				break;
 		}
-		var results = {};
 		var text = "";
 		comments.forEach((comment) => {
 			text = text + comment.snippet.topLevelComment.snippet.textOriginal + ". ";
@@ -90,13 +89,10 @@ export default {
 				else {
 					console.log("Response from Watson is:");
 					console.log(response);
-					results = response;
+					res.send(JSON.stringify(response));
+					res.end();
+					console.log("The results are back from Watson");
 				}
-			});//starting code from IBM Watson Documentation
-		console.log("Results after Watson are:");
-		console.log(results);
-		res.send(JSON.stringify(results));
-		res.end();
-		console.log("The results are back from Watson");
+			});//starting code from IBM Watson Documentation	
 	}
 }
