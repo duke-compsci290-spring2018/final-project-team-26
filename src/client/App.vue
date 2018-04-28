@@ -8,7 +8,6 @@
 					  :video="vid" :thumbnail="vid.snippet.thumbnails.default"
 					  :key="vid.id.videoId" :activate="setActiveVideo"></result-entry>
 		<analyzer v-if="activeVideo.id.videoId !== ''" :video="activeVideo" :returnFunc="unSetActiveVideo"></analyzer>
-		<button @click=videosCheck>Check</button>
 	</div>
   </div>
 </template>
@@ -120,6 +119,8 @@ export default {
 	#main {
 		background-color: #ff0023;
 		border-radius: 10px;
+		padding-left: 5px;
+		padding-bottom: 5px;
 	}
 	h1, h2 {
 		text-align: center;
