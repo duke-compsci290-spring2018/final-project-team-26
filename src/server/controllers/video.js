@@ -88,9 +88,12 @@ export default {
 					console.log("Error: " + err);
 				}
 				else {
+					console.log("Response from Watson is:");
+					console.log(response);
 					results = response;
 				}
 			});//starting code from IBM Watson Documentation
+		console.log("Results after Watson are:");
 		console.log(results);
 		res.send(JSON.stringify(results));
 		res.end();
