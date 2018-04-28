@@ -91,7 +91,6 @@ export default {
 					results.push(response);
 				}
 			});//starting code from IBM Watson Documentation
-		});
 		res.send(JSON.stringify(results));
 		res.end();
 		console.log("The results are back from Watson");
