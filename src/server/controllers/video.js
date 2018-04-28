@@ -66,7 +66,7 @@ export default {
 				};
 				break;
 		}
-		results = [];
+		var results = [];
 		comments.forEach((comment) => {
 			var params = {
 				'text': comment.snippet.topLevelComment.snippet.textOriginal,
