@@ -18,7 +18,7 @@ export default {
 				"Sentiment analysis": "Generates a score for positivity vs. negativity: -1.0 for completely negative, 1.0 for completely positive.",
 				"Emotion analysis": "Generates scores, from 0 to 1.0, of how much of the five basic emotions are expressed: joy, sadness, anger, fear, and disgust.",
 				"Content analysis": "Determines key topics being discussed.",
-				"Entities analysis": "Determines people, places, etc. being discussed."
+				"Entities analysis": "Determines people, places, things, etc. being discussed."
 			}
 		}
 	},

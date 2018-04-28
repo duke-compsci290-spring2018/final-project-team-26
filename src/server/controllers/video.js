@@ -57,7 +57,7 @@ export default {
 			case "Content analysis":
 				choice = "concepts";
 				additions = {
-					'limit': 3
+					'limit': 10
 				};
 				break;
 			case "Entities analysis":

@@ -5,6 +5,7 @@
 		<p id="desc">{{video.snippet.description}}</p>
 		<p id="count">I have collected the top {{myComments.length}} comments from this video.</p>
 		<analysis-selector :onSelect="requestAnalysis"></analysis-selector>
+		<analysis-presenter v-if="this.resultsActive" :closeMe="closeAnalysis" :results="this.myResults" :type="this.currentAnalysis"></analysis-presenter>
 		<button @click="returnFunc">&larr; Return to search results</button>
 	</div>
 </template>
@@ -12,6 +13,7 @@
 <script>
 import AnalyzerResultEntry from "./AnalyzerResultEntry.vue";
 import AnalysisSelector from "./AnalysisSelector.vue";
+import AnalysisPresenter from "./AnalysisPresenter.vue";
 import {YOUTUBE_KEY, CLIENT_ID} from "../keys.js";
 import {SERVER_URL} from "../heroku_url.js"
 export default {
@@ -20,13 +22,17 @@ export default {
 		return {
 			myVideo: this.video,
 			myCommentThread: {},
-			myComments: []
+			myComments: [],
+			myResults: {},
+			currentAnalysis: "",
+			resultsActive: false
 		}
 	},
 	props: ['video', "returnFunc"],
 	components: {
 		AnalyzerResultEntry,
-		AnalysisSelector
+		AnalysisSelector,
+		AnalysisPresenter
 	},
 	created: function() {
 		 var url = "https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&key=" + YOUTUBE_KEY + "&maxResults=100&order=relevance&videoId=" + this.myVideo.id.videoId;
@@ -51,8 +57,27 @@ export default {
 				headers: {
 					"content-type": 'application/json'
 				}
-			}).then(response => console.log(response))
-				.catch(err => console.log(err));
+			}).then(response => response.json())
+			.then(data => {
+				console.log(data);
+				if(type === "Sentiment analysis") {
+					console.log(data.sentiment);
+					this.showResults(data.sentiment, type);
+				}
+				else if(type === "Emotion analysis") {
+					console.log(data.emotion);
+					this.showResults(data.emotion, type);
+				}
+				else if(type === "Content analysis") {
+					console.log(data.concepts);
+					this.showResults(data.concepts, type);
+				}
+				else {
+					console.log(data.entities);
+					this.showResults(data.entities, type);
+				}
+			})
+			.catch(err => console.log(err));
 //			var test = "This is a test. What can you do, Watson? I'm very excited to find out, but also somewhat skeptical. Do your best!";
 //			var testEncoded = encodeURIComponent(test);
 //			var requestURLStart = "https://watson-api-explorer.mybluemix.net/natural-language-understanding/api/v1/analyze?version=2018-03-16&text=";
@@ -70,6 +95,18 @@ export default {
 				.then(response => response.json())
 				.then(contents => { console.log(contents) })
 				.catch(() => console.log("Access to " + url + " is still blocked."))
+		},
+		
+		showResults (data, analysisType) {
+			this.myResults = data;
+			this.currentAnalysis = analysisType;
+			this.resultsActive = true;
+		},
+		
+		closeAnalysis () {
+			this.myResults = {};
+			this.currentAnalysis = "";
+			this.resultsActive = false;
 		}
 	}
 }
