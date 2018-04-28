@@ -22,6 +22,8 @@ app.use(Cors())
 app.use(BodyParser.urlencoded({ extended: true }))
 // parse JSON form data
 app.use(BodyParser.json())
+//code from Stack Overflow to increase max limit to fix 413 error
+app.use(express.bodyParser({limit: '50mb'}));
 //code from https://enable-cors.org/server_expressjs.html
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
