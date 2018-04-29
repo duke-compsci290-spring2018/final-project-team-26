@@ -1,8 +1,8 @@
 <template>
 	<div id="searcher">
 		<form action="">
-			<label for="text">YouTube Search</label>
-			<input type="text" placeholder="Type Here to Search For a Video" @keyup.13="search">
+			<label for="searchbar">YouTube Search</label>
+			<input type="text" placeholder="Type Here to Search For a Video" @keyup.13="search" id="searchbar">
 		</form>
 		<button id="search-submit" @click="search">Search</button>
 		<button id="cancel" @click="undo" v-if="videoIsNotActive === null">Cancel Search</button>
