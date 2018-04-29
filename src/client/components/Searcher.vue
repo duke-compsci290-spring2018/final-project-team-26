@@ -1,6 +1,7 @@
 <template>
 	<div id="searcher">
-		<input type="text" placeholder="Type Here to Search For a Video" @keyup.13="search" title="type YouTube search here">
+		<label for="text">YouTube Search Box</label>
+		<input type="text" placeholder="Type Here to Search For a Video" @keyup.13="search">
 		<button id="search-submit" @click="search">Search</button>
 		<button id="cancel" @click="undo" v-if="videoIsNotActive === null">Cancel Search</button>
 	</div>
@@ -24,6 +25,7 @@ export default {
 		height: 25px;
 		font-size: 14pt;
 	}
-	#cancel {
+	label {
+		display:none;
 	}
 </style>
