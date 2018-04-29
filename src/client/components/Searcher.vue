@@ -1,6 +1,6 @@
 <template>
 	<div id="searcher">
-		<input type="text" placeholder="YouTube search" @keyup.13="search">
+		<input type="text" placeholder="Type Here to Search For a Video" @keyup.13="search">
 		<button id="search-submit" @click="search">Search</button>
 		<button id="cancel" @click="undo" v-if="videoIsNotActive">Cancel Search</button>
 	</div>
@@ -16,7 +16,7 @@ export default {
 <style lang="scss" scoped>
 	input {
 		width: 80%;
-		height: 25px;
+		height: 30px;
 		font-size: 14pt;
 		margin: 2% 1%;
 	}

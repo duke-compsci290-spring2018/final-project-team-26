@@ -9,6 +9,7 @@
 					  :key="vid.id.videoId" :activate="setActiveVideo"></result-entry>
 		<analyzer v-if="activeVideo.id.videoId !== ''" :video="activeVideo" :returnFunc="unSetActiveVideo"></analyzer>
 	</div>
+	  <p id="explanation">To begin, type the video you're looking for into the search bar above, just as you would for a normal search on YouTube. From there, you can click on a video to pick it, and then order an analysis from the menu that opens.</p>
   </div>
 </template>
 
@@ -124,5 +125,9 @@ export default {
 	}
 	h1, h2 {
 		text-align: center;
+	}
+	#explanation {
+		font-size: 14pt;
+		margin: 2%;
 	}
 </style>
