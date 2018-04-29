@@ -1,49 +1,96 @@
 <template>
   <div id="app">
+	  <header>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                </div>
+                <authentication class="nav navbar-nav navbar-right"
+                    :getUser="getUser"
+                    :setUser="setUser">
+                </authentication>
+            </div>
+        </nav>
+    </header>
 	  <h1>Welcome to the YouTube Comment Analyzer</h1>
 	  <h2>Created by Ryan Hill for Comp Sci 290: Web Application Design</h2>
     <div id="main">
-		<searcher :search="search" :undo="undoSearch" :videoIsNotActive="activeVideo.id.videoId === ''"></searcher>
-		<result-entry v-if="activeVideo.id.videoId === ''" v-for="vid in videos"
+		<searcher :search="search" :undo="undoSearch" :videoIsNotActive="activeVideo"></searcher>
+		<div v-if="activeVideo === null">
+			<result-entry v-for="vid in videos"
 					  :video="vid" :thumbnail="vid.snippet.thumbnails.default"
 					  :key="vid.id.videoId" :activate="setActiveVideo"></result-entry>
-		<analyzer v-if="activeVideo.id.videoId !== ''" :video="activeVideo" :returnFunc="unSetActiveVideo"></analyzer>
+		</div>
+		<analyzer v-if="activeVideo !== null" :video="activeVideo" :returnFunc="unSetActiveVideo" :analysisRecord="sendAnalysisToDB" :isUser="permission === 'user' || permission === 'admin'"></analyzer>
 	</div>
 	  <p id="explanation">To begin, type the video you're looking for into the search bar above, just as you would for a normal search on YouTube. From there, you can click on a video to pick it, and then order an analysis from the menu that opens.</p>
+<!--	  <button @click="checkPermission"></button>-->
+	  <div id="admin-section" v-if="permission === 'admin'">
+		  <h3>Welcome, Site Administrator</h3>
+		  <div id="search-records">
+		  	<button @click="getSearchRecord">Show Me Search Records</button>
+		  	<ul>
+				<li v-for="search in mySearchRecords">{{search.text}} - searched {{search.count}} times</li>
+			</ul>
+		  	<button v-if="mySearchRecords.length > 0" @click="mySearchRecords = []">Close Search Records</button>
+		</div>
+		<div id="analysis-records">
+			<button @click="getAnalysisRecord">Show Me Analysis Records</button>
+			<ul>
+				<li v-for="anlys in myAnalysisRecords">{{anlys.timestamp}} -- {{anlys.title}}, {{anlys.analysisType}} -- user: {{anlys.myUser.name}}, {{anlys.myUser.email}}, {{anlys.myUser.uid}} -- VideoID:{{anlys.id}}</li>
+			</ul>
+			<button v-if="myAnalysisRecords.length > 0" @click="myAnalysisRecords = []">Close Analysis Records</button>
+		</div>
+	</div>
   </div>
 </template>
 
 <script>
+import { analysisRef, searchesRef, usersRef } from './database';
 import ResultEntry from "./components/ResultEntry.vue";
 import Searcher from "./components/Searcher.vue";
 import Analyzer from "./components/Analyzer.vue";
+import Authentication from "./components/Authentication.vue";
 import {YOUTUBE_KEY, CLIENT_ID} from "./keys.js";
 export default {
   name: 'app',
 	data () {
 		return {
 			videos: [],
-			activeVideo: {
-				id: {
-					videoId: ""
-				}
-			},
+			activeVideo: null,
 			//some placeholder values for testing
 			testtitle: "Test Title",
 			testchannel: "Test Channel",
 			testlength: "3:50",
 			testthumbnail: "",
+			user: null,
+			permission: "guest",
+			mySearchRecords: [],
+			myAnalysisRecords: []
 		}
 	},
-	
+	firebase: {
+        // local representations of firebase data, but separate from vue-images component data
+		analysislist: analysisRef,
+		searchlist: searchesRef,
+		userlist: usersRef
+    },
 	components: {
 		ResultEntry,
 		Searcher,
-		Analyzer
+		Analyzer,
+		Authentication
 	},
 	
 //	created: function () {
-//		this.formatSearch("Here is a test");
+//		analysisRef.set({
+//			init: {
+//				title: "Test",
+//				id: "id",
+//				analysis: "test",
+//				timestamp: "N/A"
+//			}
+//		})
 //	},
 	
 	methods: {
@@ -51,11 +98,7 @@ export default {
 		search () {
 			console.log("entered search");
 			var mySearch = $("#searcher input").val();
-			this.activeVideo = {
-				id: {
-					videoId: ""
-				}
-			};
+			this.activeVideo = null;
 			console.log(mySearch);
 			var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=25&key="+ YOUTUBE_KEY + "&q=";//first part of url to request to (need to format search before putting it in as value for q)
 			url += this.formatSearch(mySearch);//complete the url to send the GET request to
@@ -63,16 +106,82 @@ export default {
 			//sends GET request to the url and puts the JSON sent back in the videos list
 			$.get(url, (ret) => {
 				this.videos = ret.items;
+				console.log(this.videos);
 			});
+			
+			if(this.permission === "user" || this.permission === "admin") {
+				this.sendSearchToDB(mySearch);
+			}
 		},
 		
+		sendSearchToDB (search) {
+			searchesRef.once('value', snapshot => {
+				var currentRecord = snapshot.val();
+				var match = this.findSearchKey(currentRecord, search);
+				if(match === false) {
+					var newSearchRef = searchesRef.push();
+					newSearchRef.set({
+						text: search,
+						count: 1
+					});
+				}
+				else {
+					var newCount = currentRecord[match].count + 1;
+					searchesRef.update({
+						[match]: {
+							text: search,
+							count: newCount
+						}
+					});
+				}
+			});
+		},
+		sendAnalysisToDB (video, analysisType) {
+			var d = new Date();
+			var timestamp = "";
+			timestamp = timestamp + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + ", " + d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear();
+			var newAnalysisRef = analysisRef.push();
+			newAnalysisRef.set({
+				title: video.snippet.title,
+				id: video.id.videoId,
+				analysis: analysisType,
+				timestamp: timestamp,
+				myUser: this.user
+			});
+		},
 		//used so that I can check the contents of the videos list
 		videosCheck () {
 			console.log(this.videos);
 			console.log(this.activeVideo);
 			console.log(typeof(this.activeVideo));
 		},
-		
+		checkPermission () {
+			console.log("checking user and permission:");
+			console.log(this.user);
+			console.log(this.permission);
+			console.log(this.videos);
+			console.log(this.activeVideo);
+		},
+		getSearchRecord () {
+			this.mySearchRecords = [];
+			searchesRef.once('value', snapshot => {
+				var searches = snapshot.val();
+				Object.keys(searches).forEach(key => {
+					var curr = searches[key];
+					this.mySearchRecords.push(curr);
+				});
+			});
+		},
+		getAnalysisRecord () {
+			this.myAnalysisRecords = [];
+			analysisRef.once('value', snapshot => {
+				var analyses = snapshot.val();
+				Object.keys(analyses).forEach(key => {
+					var curr = analyses[key];
+					this.myAnalysisRecords.push(curr);
+				});
+			});
+		},
 		//takes in a string and formats it to be given in a search request to YouTube in the following form:
 		//if it is a single word, do not change it; if there are multiple words, replace the spaces between them with pluses
 		formatSearch(str) {
@@ -106,10 +215,92 @@ export default {
 		},
 		
 		unSetActiveVideo() {
-			this.activeVideo = {
-				id: {
-					videoId: ""
+			this.activeVideo = null;
+		},
+		setUserCreds () {
+			
+		},
+		
+		getUserCreds () {
+			usersRef.once('value', (snapshot) => {
+				console.log("getting user credentials");
+				var users = snapshot.val();
+				console.log(users);
+				var search = this.findUserKey(users, this.user);
+				console.log(search);
+				if(search===false) { //user not in database authorization record
+					console.log("adding user to authorization record");
+					var newUserRef = usersRef.push();
+					newUserRef.set({
+						uid: this.user.uid,
+						rank: "user"
+					});
+					this.permission = "user";
 				}
+				else {
+					console.log(users[search].rank);
+					this.permission = users[search].rank;
+				}
+			});
+		},
+		// allow child component to change user value
+        getUser () {
+            return this.user
+        },
+        setUser (user) {
+			console.log("setting user");
+            this.user = user;
+			if(user) {//prevents error from trying to make null access
+				console.log("before entering getUserCreds");
+				this.getUserCreds();
+			}
+			else {
+				this.permission = null;
+			}
+			console.log(this.user);
+			console.log(this.permission);
+        },
+		//obtains the key matching a given user's uid in the authorization record, returns false if the uid is not found
+		findUserKey(uList,user) {
+			console.log(user.uid);
+			var foundIt = false;
+			var matchKey = "";
+			Object.keys(uList).forEach(key => {
+				console.log(key);
+				console.log(uList[key]);
+				console.log(user.uid);
+				if(uList[key].uid === user.uid) {
+					console.log("returning key");
+					foundIt = true;
+					matchKey = key;
+				}
+			});
+			if(foundIt) {
+				return matchKey;
+			}
+			else {
+				return false;
+			}
+		},
+		
+		//looks for key corresponding to a search in the database record - returns key if found, false if not
+		findSearchKey (sList, search) {
+			var foundIt = false;
+			var matchKey = "";
+			Object.keys(sList).forEach(key => {
+				console.log(key);
+				console.log(sList[key]);
+				if(sList[key].text === search) {
+					console.log("returning key");
+					foundIt = true;
+					matchKey = key;
+				}
+			});
+			if(foundIt) {
+				return matchKey;
+			}
+			else {
+				return false;
 			}
 		}
 	}
@@ -129,5 +320,15 @@ export default {
 	#explanation {
 		font-size: 14pt;
 		margin: 2%;
+	}
+	.navbar {
+		background-color: #7c0000;
+		color: white;
+		margin-bottom: 3%;
+	}
+	#admin-section {
+		background-color: #fefafe;
+		border: 10px solid red;
+		border-radius: 10px;
 	}
 </style>

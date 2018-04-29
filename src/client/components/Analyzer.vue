@@ -1,5 +1,6 @@
 <template>
 	<div id="analyze">
+		<button v-if="isUser">Add this video to my favorites</button>
 		<analyzer-result-entry :video="video" :thumbnail="video.snippet.thumbnails.medium"></analyzer-result-entry>
 		<h4>Description:</h4>
 		<p id="desc">{{video.snippet.description}}</p>
@@ -28,7 +29,7 @@ export default {
 			resultsActive: false
 		}
 	},
-	props: ['video', "returnFunc"],
+	props: ['video', "returnFunc", 'analysisRecord', 'isUser'],
 	components: {
 		AnalyzerResultEntry,
 		AnalysisSelector,
@@ -40,6 +41,8 @@ export default {
 			this.myCommentThread = response;
 			this.myComments = response.items;
 			console.log(this.myComments);
+		}).catch(error => {
+			console.log(error);
 		});
 	},
 	methods: {
@@ -60,6 +63,9 @@ export default {
 			}).then(response => response.json())
 			.then(data => {
 				console.log(data);
+				if(this.isUser) {
+					this.analysisRecord(this.myVideo, type);
+				}
 				if(type === "Sentiment analysis") {
 					console.log(data.sentiment);
 					this.showResults(data.sentiment, type);
