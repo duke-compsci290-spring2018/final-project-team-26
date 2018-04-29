@@ -1,13 +1,14 @@
 <template>
 	<div id="analyze">
-		<button v-if="isUser">Add this video to my favorites</button>
+		<button @click="returnFunc" class="return-button">&larr; Return to search results</button>
+		<button v-if="isUser" @click="addFav(video)">Add this video to my favorites</button>
 		<analyzer-result-entry :video="video" :thumbnail="video.snippet.thumbnails.medium"></analyzer-result-entry>
 		<h4>Description:</h4>
 		<p id="desc">{{video.snippet.description}}</p>
 		<p id="count">I have collected the top {{myComments.length}} comments from this video.</p>
 		<analysis-selector :onSelect="requestAnalysis"></analysis-selector>
 		<analysis-presenter v-if="this.resultsActive" :closeMe="closeAnalysis" :results="this.myResults" :type="this.currentAnalysis"></analysis-presenter>
-		<button @click="returnFunc">&larr; Return to search results</button>
+		<button @click="returnFunc" class="return-button">&larr; Return to search results</button>
 	</div>
 </template>
 
@@ -29,7 +30,7 @@ export default {
 			resultsActive: false
 		}
 	},
-	props: ['video', "returnFunc", 'analysisRecord', 'isUser'],
+	props: ['video', "returnFunc", 'analysisRecord', 'isUser', 'addFav'],
 	components: {
 		AnalyzerResultEntry,
 		AnalysisSelector,
@@ -129,5 +130,8 @@ export default {
 	}
 	h4, #desc, #count, button {
 		margin: 10px;
+	}
+	.return-button {
+		display:block;
 	}
 </style>

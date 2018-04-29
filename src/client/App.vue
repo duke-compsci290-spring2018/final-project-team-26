@@ -4,6 +4,7 @@
         <nav class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
+					<button id="favs-button" v-if="permission === 'user' || permission === 'admin'" @click="getUserFavs">My Favorites</button>
                 </div>
                 <authentication class="nav navbar-nav navbar-right"
                     :getUser="getUser"
@@ -12,6 +13,7 @@
             </div>
         </nav>
     </header>
+	  <favorites-view :favsList="myUserFavs" :displayMe="displayUserFavs" :cancel="closeUserFavs"></favorites-view>
 	  <h1>Welcome to the YouTube Comment Analyzer</h1>
 	  <h2>Created by Ryan Hill for Comp Sci 290: Web Application Design</h2>
     <div id="main">
@@ -21,7 +23,7 @@
 					  :video="vid" :thumbnail="vid.snippet.thumbnails.default"
 					  :key="vid.id.videoId" :activate="setActiveVideo"></result-entry>
 		</div>
-		<analyzer v-if="activeVideo !== null" :video="activeVideo" :returnFunc="unSetActiveVideo" :analysisRecord="sendAnalysisToDB" :isUser="permission === 'user' || permission === 'admin'"></analyzer>
+		<analyzer v-if="activeVideo !== null" :video="activeVideo" :returnFunc="unSetActiveVideo" :analysisRecord="sendAnalysisToDB" :isUser="permission === 'user' || permission === 'admin'" :addFav="addNewUserFav"></analyzer>
 	</div>
 	  <p id="explanation">To begin, type the video you're looking for into the search bar above, just as you would for a normal search on YouTube. From there, you can click on a video to pick it, and then order an analysis from the menu that opens.</p>
 <!--	  <button @click="checkPermission"></button>-->
@@ -41,6 +43,17 @@
 			</ul>
 			<button v-if="myAnalysisRecords.length > 0" @click="myAnalysisRecords = []">Close Analysis Records</button>
 		</div>
+		<div id="user-records">
+		  	<button @click="getUserRecord">Show Me User Records</button>
+		  	<ul>
+				<li v-for="usr in myUserRecords">
+					<span>{{usr.uid}}>{{usr.uid}} - rank: {{usr.rank}}</span>
+					<button v-if="usr.rank !== 'admin'" class="admin-promote" @click="setUserCreds(usr, 'admin')">Promote To Administrator</button>
+					<button v-if="usr.rank === 'admin'" class="admin-demote" @click="setUserCreds(usr, 'user')">Demote</button>
+				</li>
+			</ul>
+		  	<button v-if="myUserRecords.length > 0" @click="myUserRecords = []">Close Search Records</button>
+		</div>
 	</div>
   </div>
 </template>
@@ -51,6 +64,7 @@ import ResultEntry from "./components/ResultEntry.vue";
 import Searcher from "./components/Searcher.vue";
 import Analyzer from "./components/Analyzer.vue";
 import Authentication from "./components/Authentication.vue";
+import FavoritesView from "./components/FavoritesView.vue"
 import {YOUTUBE_KEY, CLIENT_ID} from "./keys.js";
 export default {
   name: 'app',
@@ -66,7 +80,10 @@ export default {
 			user: null,
 			permission: "guest",
 			mySearchRecords: [],
-			myAnalysisRecords: []
+			myAnalysisRecords: [],
+			myUserRecords: [],
+			myUserFavs: [],
+			displayUserFavs: false
 		}
 	},
 	firebase: {
@@ -79,7 +96,8 @@ export default {
 		ResultEntry,
 		Searcher,
 		Analyzer,
-		Authentication
+		Authentication,
+		FavoritesView
 	},
 	
 //	created: function () {
@@ -182,6 +200,67 @@ export default {
 				});
 			});
 		},
+		getUserRecord () {
+			this.myUserRecords = [];
+			usersRef.once('value', snapshot => {
+				var usersRec = snapshot.val();
+				Object.keys(usersRec).forEach(key => {//want admins first in record
+					var curr = usersRec[key];
+					if(curr.rank === "admin") {
+						this.myUserRecords.push(curr);
+					}
+				});
+				Object.keys(usersRec).forEach(key => {//non-admins after admins
+					var curr = usersRec[key];
+					if(curr.rank !== "admin") {
+						this.myUserRecords.push(curr);
+					}
+				});
+			});
+		},
+		getUserFavs() {
+			this.myUserFavs = [];
+			usersRef.child(this.user.key + '/favorites').once('value', snapshot => {
+				var snap = snapshot.val();
+				if(snap !== null) {
+					console.log(snapshot.val());
+					Object.keys(snap).forEach(key => {
+					console.log(snap[key]);
+					this.myUserFavs.push(snap[key]);
+					});
+					console.log(this.myUserFavs);
+				}
+				this.displayUserFavs = true;
+			});
+		},
+		addNewUserFav (video) {
+			console.log("adding new favorite:");
+			console.log(video);
+			console.log(this.user);
+			usersRef.child(this.user.key).once('value', snapshot => {
+				var userData = snapshot.val();
+				var hasFavs = false;
+				Object.keys(userData).forEach(key =>{//check whether favorites exists in the record or not
+					if(key === 'favorites') {
+						hasFavs = true;
+					}
+				});
+				
+				if(hasFavs) {
+					var newFavRef = usersRef.child(this.user.key + '/favorites').push();
+					newFavRef.set({
+						video: video
+					});
+				}
+				else {
+					usersRef.child(this.user.key + '/favorites').set({//initializing with a dummy key I made up (will be used once for each user, but should be fine because the data is split and there will be no conflicts)
+						"77xfre4342de0x": {
+							video: video
+						}
+					});
+				}
+			});
+		},
 		//takes in a string and formats it to be given in a search request to YouTube in the following form:
 		//if it is a single word, do not change it; if there are multiple words, replace the spaces between them with pluses
 		formatSearch(str) {
@@ -217,8 +296,17 @@ export default {
 		unSetActiveVideo() {
 			this.activeVideo = null;
 		},
-		setUserCreds () {
-			
+		setUserCreds (user, newRank) {
+			usersRef.once('value', snapshot => {
+				var uList = snapshot.val();
+				var keyMatch = this.findUserKey(uList, user);
+				usersRef.update({
+					[keyMatch]: {
+						uid: user.uid,
+						rank: newRank
+					}
+				});
+			});
 		},
 		
 		getUserCreds () {
@@ -227,6 +315,7 @@ export default {
 				var users = snapshot.val();
 				console.log(users);
 				var search = this.findUserKey(users, this.user);
+				this.user['key'] = search;
 				console.log(search);
 				if(search===false) { //user not in database authorization record
 					console.log("adding user to authorization record");
@@ -302,6 +391,10 @@ export default {
 			else {
 				return false;
 			}
+		},
+		
+		closeUserFavs () {
+			this.displayUserFavs = false;
 		}
 	}
 }
@@ -330,5 +423,20 @@ export default {
 		background-color: #fefafe;
 		border: 10px solid red;
 		border-radius: 10px;
+	}
+	li span {
+		width: 80%
+	}
+	.admin-promote, .admin-demote {
+		margin-left: 5%;
+	}
+	#favs-button {
+		background-color: #7c0000;
+		border:none;
+		color: white;
+		padding: 10px;
+	}
+	#favs-button:hover {
+		background-color: #bc0000;
 	}
 </style>

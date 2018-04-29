@@ -15,7 +15,7 @@ export default {
 	data () {
 		return {
 			choices: {
-				"Sentiment analysis": "Generates a score for positivity vs. negativity: -1.0 for completely negative, 1.0 for completely positive.",
+				"Sentiment analysis": "Generates a score for positivity vs. negativity: -1.0 for completely negative, 1.0 for completely positive. This analysis is not meant to represent an overall appraisal of opinion, but rather the manner in which opinion is expressed, and so it often leans toward negative scores.",
 				"Emotion analysis": "Generates scores, from 0 to 1.0, of how much of the five basic emotions are expressed: joy, sadness, anger, fear, and disgust.",
 				"Content analysis": "Determines key topics being discussed.",
 				"Entities analysis": "Determines people, places, things, etc. being discussed."

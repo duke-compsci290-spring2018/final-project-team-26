@@ -5,6 +5,7 @@
 			<img :src="thumbnail.url" :width="thumbnail.width" :height="thumbnail.height">
 			<h3 class="video-title">{{limitTitle(video.snippet.title)}}</h3>
 			<span class="creator">{{video.snippet.channelTitle}}</span>
+			<span class="publishDate">Published {{extractDate(video.snippet.publishedAt)}}</span>
 		</div>
 		<hr>
 	</div>
@@ -22,6 +23,11 @@
 				else {
 					return name.substring(0, 50) + "...";
 				}
+			},
+			extractDate (date) {
+				var str = date.split("T")[0];
+				var strSplt = str.split("-");
+				return strSplt[1] + "/" + strSplt[2] + "/" + strSplt[0];
 			}
 		}
 	}
@@ -53,7 +59,10 @@
 		bottom: 5px;
 */
 	}
-
+	.publishDate {
+		font-size: 10pt;
+		color: #555555;
+	}
 	@media (min-width: 768px) {
 		.entry {
 			width: 90%;
