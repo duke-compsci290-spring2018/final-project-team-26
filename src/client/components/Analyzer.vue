@@ -7,6 +7,9 @@
 		<p id="desc">{{video.snippet.description}}</p>
 		<p id="count">I have collected the top {{myComments.length}} comments from this video.</p>
 		<analysis-selector :onSelect="requestAnalysis"></analysis-selector>
+		<div id="loading" v-if="isLoading">
+			<p>Fetching your analysis. Please wait...</p>
+		</div>
 		<analysis-presenter v-if="this.resultsActive" :closeMe="closeAnalysis" :results="this.myResults" :type="this.currentAnalysis"></analysis-presenter>
 		<button @click="returnFunc" class="return-button">&larr; Return to search results</button>
 	</div>
@@ -27,7 +30,8 @@ export default {
 			myComments: [],
 			myResults: {},
 			currentAnalysis: "",
-			resultsActive: false
+			resultsActive: false,
+			isLoading: false
 		}
 	},
 	props: ['video', "returnFunc", 'analysisRecord', 'isUser', 'addFav'],
@@ -52,6 +56,7 @@ export default {
 			console.log(type);
 			console.log(this.myComments);
 			console.log(SERVER_URL);
+			this.isLoading = true;
 			fetch(`${SERVER_URL}/analyze`, {
 				method: 'POST',
 				body: JSON.stringify({
@@ -63,6 +68,7 @@ export default {
 				}
 			}).then(response => response.json())
 			.then(data => {
+				this.isLoading = false;
 				console.log(data);
 				if(this.isUser) {
 					this.analysisRecord(this.myVideo, type);
@@ -85,14 +91,6 @@ export default {
 				}
 			})
 			.catch(err => console.log(err));
-//			var test = "This is a test. What can you do, Watson? I'm very excited to find out, but also somewhat skeptical. Do your best!";
-//			var testEncoded = encodeURIComponent(test);
-//			var requestURLStart = "https://watson-api-explorer.mybluemix.net/natural-language-understanding/api/v1/analyze?version=2018-03-16&text=";
-//			var requestURLRest = "&features=concepts%2Centities%2Cemotion%2Csentiment&return_analyzed_text=true&clean=true&fallback_to_raw=true&concepts.limit=8&emotion.document=true&entities.limit=50&entities.mentions=false&entities.emotion=false&entities.sentiment=false&keywords.limit=50&keywords.emotion=false&keywords.sentiment=false&relations.model=en-news&semantic_roles.limit=50&semantic_roles.entities=false&semantic_roles.keywords=false&sentiment.document=true";
-//			var requestURL = requestURLStart + testEncoded + requestURLRest;
-//			$.get(requestURL).then((response) => {
-//				console.log(response);
-//			});
 		},
 		
 		// given a site that does not respond to Access-Control-*
@@ -133,5 +131,16 @@ export default {
 	}
 	.return-button {
 		display:block;
+	}
+	#loading {
+		position: fixed;
+		top: 33%;
+		font-size: 24pt;
+		text-align: center;
+		padding: 5%;
+		background-color: white;
+		border: 7px solid red;
+		border-radius: 10px;
+		box-shadow: 0 0 20px 10000px rgba(0,0,0,0.3);
 	}
 </style>
