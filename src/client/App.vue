@@ -13,7 +13,7 @@
             </div>
         </nav>
     </header>
-	  <favorites-view :favsList="myUserFavs" :displayMe="displayUserFavs" :cancel="closeUserFavs"></favorites-view>
+	  <favorites-view :favsList="myUserFavs" :displayMe="displayUserFavs" :cancel="closeUserFavs" :removeFav="deleteUserFav"></favorites-view>
 	  <h1>Welcome to the YouTube Comment Analyzer</h1>
 	  <h2>Created by Ryan Hill for Comp Sci 290: Web Application Design</h2>
     <div id="main">
@@ -47,7 +47,7 @@
 		  	<button @click="getUserRecord">Show Me User Records</button>
 		  	<ul>
 				<li v-for="usr in myUserRecords">
-					<span>{{usr.uid}}>{{usr.uid}} - rank: {{usr.rank}}</span>
+					<span>{{usr.name}} - uid:{{usr.uid}} - rank: {{usr.rank}}</span>
 					<button v-if="usr.rank !== 'admin'" class="admin-promote" @click="setUserCreds(usr, 'admin')">Promote To Administrator</button>
 					<button v-if="usr.rank === 'admin'" class="admin-demote" @click="setUserCreds(usr, 'user')">Demote</button>
 				</li>
@@ -225,8 +225,10 @@ export default {
 				if(snap !== null) {
 					console.log(snapshot.val());
 					Object.keys(snap).forEach(key => {
-					console.log(snap[key]);
-					this.myUserFavs.push(snap[key]);
+						var fav = snap[key];
+						fav['key'] = key;
+						console.log(fav);
+						this.myUserFavs.push(fav);
 					});
 					console.log(this.myUserFavs);
 				}
@@ -260,6 +262,12 @@ export default {
 					});
 				}
 			});
+		},
+		deleteUserFav (fav) {
+			usersRef.child(this.user.key + '/favorites').update({
+				[fav.key]: null
+			});
+			this.getUserFavs();
 		},
 		//takes in a string and formats it to be given in a search request to YouTube in the following form:
 		//if it is a single word, do not change it; if there are multiple words, replace the spaces between them with pluses
@@ -303,10 +311,12 @@ export default {
 				usersRef.update({
 					[keyMatch]: {
 						uid: user.uid,
+						name: user.name,
 						rank: newRank
 					}
 				});
 			});
+			this.getUserRecord();
 		},
 		
 		getUserCreds () {
@@ -322,6 +332,7 @@ export default {
 					var newUserRef = usersRef.push();
 					newUserRef.set({
 						uid: this.user.uid,
+						name: this.user.name,
 						rank: "user"
 					});
 					this.permission = "user";
