@@ -1,0 +1,12 @@
+Feedback from Michael Hill:
+
+An idea of how to distinguish between guests and registered users…
+For the latter, a person’s search history and/or results are retained.  For example, if I wanted to return to the website and pick up where I left off or look at what I had looked at previously, I would have that option.
+ 
+Another suggestion:  you have a “Return to search results” button at the bottom of the analysis.  Can you also add a “New Search” button or one that says “Search another topic”? I know that one could click return to search results and just put in a new query, but I think it would look better to have a new search option also.
+ 
+I like the fact that the results come up on pop-up boxes.  I did not like that in most cases I had to scroll up to find the results.  In fact, when I first did it with the sentiment analysis, I could not tell that results were available because the pop up box was completely off screen.  I thought that button was not working.  But, I then tried emotion analysis, and I could see the bottom edge of the box so I then scrolled up to review results.  Content analysis…same thing.  Entities analysis did not require scrolling to see some results…maybe because the amount of information was so large it extended down further.
+ 
+Other than having to scroll to see the results, this is very easy to use.
+
+Michael D. Hill
