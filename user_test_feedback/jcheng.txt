@@ -1,0 +1,9 @@
+Feedback from Judy Cheng:
+
+1.) The return to search results is at the bottom of page, it doesn't make that much of a different but intuitively, i feel like i would check toward the top of page.
+2.) When you click the different kinds of analysis, the dialogue box pops toward the top of the screen. It's not a big thing but if you're at the bottom of the page, you'll only see the bottom of the box. It's only just like a slight inconvenience where you have to keep scrolling down for the buttons and then scroll up for the analysis. I'm not sure if theres anything you can do but it would be cool if you could. 
+3.) So in order to return to the main page from a video search, it requires to the search page, then cancel the search. I didn't see a direct link to it? maybe put a link or something where you can go to the main page directly from a search result. 
+4.) so what exactly is the difference between sentiment and emotion info? Not quite sure on the semantics 
+5.) Maybe mention more of the fact this is an analysis of comments in youtube videos. Like beyond the top of the page that says youtube comment analysis, maybe mention a more about how its an analysis of the comments ^^
+
+Everything looks pretty fine, it just little things here and there. But honestly, I feel like its probably fine even if you don't actually change anything
