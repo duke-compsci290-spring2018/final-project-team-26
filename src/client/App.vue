@@ -39,7 +39,7 @@
 		<div id="analysis-records">
 			<button @click="getAnalysisRecord">Show Me Analysis Records</button>
 			<ul>
-				<li v-for="anlys in myAnalysisRecords">{{anlys.timestamp}} -- {{anlys.title}}, {{anlys.analysisType}} -- user: {{anlys.myUser.name}}, {{anlys.myUser.email}}, {{anlys.myUser.uid}} -- VideoID:{{anlys.id}}</li>
+				<li v-for="anlys in myAnalysisRecords">{{anlys.timestamp}} -- {{anlys.title}}, {{anlys.analysis}} -- user: {{anlys.myUser.name}}, {{anlys.myUser.email}}, {{anlys.myUser.uid}} -- VideoID:{{anlys.id}}</li>
 			</ul>
 			<button v-if="myAnalysisRecords.length > 0" @click="myAnalysisRecords = []">Close Analysis Records</button>
 		</div>
@@ -55,7 +55,10 @@
 		  	<button v-if="myUserRecords.length > 0" @click="myUserRecords = []">Close Search Records</button>
 		</div>
 	</div>
-	 	<div>
+	  	<hr>
+	 	<div id="json-section">
+			<h3>Getting JSON Data From This Site:</h3>
+			<p>You may request records of our analyses and searches in the form of JSON data. If you would like the data corresponding to our current records, please click the corresponding button below.</p>
 			<button @click="fetchAnalysisData">Click here for analysis JSON</button>
 			<button @click="fetchSearchData">Click here for search JSON</button>
 		</div>
@@ -476,5 +479,9 @@ export default {
 	}
 	#favs-button:hover {
 		background-color: #bc0000;
+	}
+	#json-section {
+		width: 95%;
+		margin: 5% 2.5%;
 	}
 </style>
