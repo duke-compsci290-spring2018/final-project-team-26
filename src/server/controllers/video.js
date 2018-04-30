@@ -104,7 +104,7 @@ export default {
 		})
 	},
 	returnSearchRecord (req, res) {
-		searchesRef.once('value', snapshot => {
+		searchRef.once('value', snapshot => {
 			var searches = snapshot.val();
 			res.send(JSON.stringify(searches));
 			res.end();
