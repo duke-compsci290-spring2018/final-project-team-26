@@ -70,7 +70,7 @@ import Analyzer from "./components/Analyzer.vue";
 import Authentication from "./components/Authentication.vue";
 import FavoritesView from "./components/FavoritesView.vue"
 import {YOUTUBE_KEY, CLIENT_ID} from "./keys.js";
-import {SERVER_URL} from "./database.js";
+import {SERVER_URL} from "./heroku_url.js";
 export default {
   name: 'app',
 	data () {
