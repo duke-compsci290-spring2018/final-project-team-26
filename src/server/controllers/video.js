@@ -96,7 +96,7 @@ export default {
 			});//starting code from IBM Watson Documentation	
 	},
 	returnAnalysisRecord () {
-		analysisRef.once('event', snapshot => {
+		analysisRef.once('value', snapshot => {
 			var analyses = snapshot.val();
 			res.send(JSON.stringify(analyses));
 			res.end();
@@ -104,7 +104,7 @@ export default {
 		})
 	},
 	returnSearchRecord () {
-		searchesRef.once('event', snapshot => {
+		searchesRef.once('value', snapshot => {
 			var searches = snapshot.val();
 			res.send(JSON.stringify(searches));
 			res.end();
