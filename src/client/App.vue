@@ -56,8 +56,8 @@
 		</div>
 	</div>
 	 	<div>
-			<button @click="fetchAnalysisData">Click here for analysis data</button>
-			<button @click="fetchSearchData">Click here for search data</button>
+			<button @click="fetchAnalysisData">Click here for analysis JSON</button>
+			<button @click="fetchSearchData">Click here for search JSON</button>
 		</div>
   </div>
 </template>
@@ -418,7 +418,9 @@ export default {
 				method: 'GET'})
 				.then(response => response.json())
 				.then(data => {
-					window.open(data);
+					console.log(data);
+					var myWindow = window.open("", "Search Data");
+      				myWindow.document.write(JSON.stringify(data));;
 			}).catch(err => console.log(err))
 		},
 		
@@ -427,7 +429,9 @@ export default {
 				method: 'GET'})
 				.then(response => response.json())
 				.then(data => {
-					window.open(data);
+					console.log(data);
+					var myWindow = window.open("", "Search Data");
+      				myWindow.document.write(JSON.stringify(data));;
 			}).catch(err => console.log(err))
 		}
 	}
