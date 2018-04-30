@@ -1,4 +1,4 @@
-import {db, searchRef} from '../models/database.js';
+import {db, searchRef, analysisRef} from '../models/database.js';
 import {IBM_CREDENTIALS} from '../models/ibmcreds.js';
 export default {
 	reportSearched (req, res) {
@@ -94,5 +94,21 @@ export default {
 					console.log("The results are back from Watson");
 				}
 			});//starting code from IBM Watson Documentation	
+	},
+	returnAnalysisRecord () {
+		analysisRef.once('event', snapshot => {
+			var analyses = snapshot.val();
+			res.send(JSON.stringify(analyses));
+			res.end();
+			console.log("Returned analysis record");
+		})
+	},
+	returnSearchRecord () {
+		searchesRef.once('event', snapshot => {
+			var searches = snapshot.val();
+			res.send(JSON.stringify(searches));
+			res.end();
+			console.log("Returned search record");
+		})
 	}
 }

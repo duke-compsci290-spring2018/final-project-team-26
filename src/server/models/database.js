@@ -12,3 +12,5 @@ var config = {
   };
 // connect to database
 export const db = Firebase.initializeApp(config).database();
+export const analysisRef = db.child('/analysis');
+export const searchesRef = db.child('/searched');

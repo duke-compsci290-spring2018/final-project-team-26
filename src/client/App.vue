@@ -55,6 +55,10 @@
 		  	<button v-if="myUserRecords.length > 0" @click="myUserRecords = []">Close Search Records</button>
 		</div>
 	</div>
+	 	<div>
+			<button @click="fetchAnalysisData">Click here for analysis data</button>
+			<button @click="fetchSearchData">Click here for search data</button>
+		</div>
   </div>
 </template>
 
@@ -66,6 +70,7 @@ import Analyzer from "./components/Analyzer.vue";
 import Authentication from "./components/Authentication.vue";
 import FavoritesView from "./components/FavoritesView.vue"
 import {YOUTUBE_KEY, CLIENT_ID} from "./keys.js";
+import {SERVER_URL} from "./database.js";
 export default {
   name: 'app',
 	data () {
@@ -406,6 +411,24 @@ export default {
 		
 		closeUserFavs () {
 			this.displayUserFavs = false;
+		},
+		
+		fetchAnalysisData () {
+			fetch(`${SERVER_URL}/analyze`, {
+				method: 'GET'})
+				.then(response => response.json())
+				.then(data => {
+					window.open(data);
+			}).catch(err => console.log(err))
+		},
+		
+		fetchSearchData () {
+			fetch(`${SERVER_URL}/searched`, {
+				method: 'GET'})
+				.then(response => response.json())
+				.then(data => {
+					window.open(data);
+			}).catch(err => console.log(err))
 		}
 	}
 }

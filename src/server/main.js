@@ -36,19 +36,23 @@ import Video from "./controllers/video.js";
 // list of URLs (and their protocols) that this server responds to
 // sends analysis requests to Watson API, returns results to client
 app.post('/analyze', Video.requestAnalysis)
-//returns record of searched video's in database
+//returns record of analyses in database
+app.get('/analyze', Video.returnAnalysisRecord)
+//returns record of searches in database
 app.get('/searched', Video.reportSearched)
-// adds a new video to the database's record of searches
-app.post('/searched', Video.addVideo)
-// delete given book
-app.delete('/searched/:key', Video.removeVideo)
-// nothing useful for root URL to do
+
 app.options('/analyze', (req, res) => {
 	res.send({
-		"Allow": [OPTIONS, POST]
+		"Allow": [OPTIONS, POST, GET]
 	})
 	res.end()
 })
+app.options('/searched', (req, res) => {
+	res.send({
+		"Allow": [OPTIONS, GET]
+	})
+})
+// nothing useful for root URL to do
 app.get('/', (req, res) => {
     res.json({"message": 'Welcome to the YouTube Comment Analyzer!'})
     res.end()
